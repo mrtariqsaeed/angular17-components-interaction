@@ -1,6 +1,4 @@
-import { Stock } from './models/stock.model'
-
-export const getStock = (): Stock[] => {
+export const getStock = (id: number) => {
     return [
         {
             id: 1,
@@ -10,5 +8,5 @@ export const getStock = (): Stock[] => {
             id: 2,
             qty: 3,
         }
-    ]
+    ].find(s => s.id === id)
 }

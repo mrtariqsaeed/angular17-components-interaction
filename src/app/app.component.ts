@@ -8,13 +8,12 @@ import { CartItemComponent } from './cart-item.component'
 	imports: [CartItemComponent],
 	template: `
 		<h1>Shopping Cart</h1>
-
 		@for (product of products; track product.id) {
-      <cart-item
-        [product]="product"
-        (remove)="updateQTY('remove', product.id)"
-        (add)="updateQTY('add', product.id)"
-      />
+		<cart-item
+			[product]="product"
+			(add)="updateQTY('add', product.id)"
+			(remove)="updateQTY('remove', product.id)"
+		/>
 		}
 		<b>Total: {{ '$' + total }}</b>
 	`
@@ -24,13 +23,13 @@ export class AppComponent {
 	products: Product[] = [
 		{
 			id: 1,
-			name: 'sugar',
+			name: 'Sugar',
 			price: 5,
 			qty: 2
 		},
 		{
 			id: 2,
-			name: 'rice',
+			name: 'Rice',
 			price: 8,
 			qty: 1
 		}
@@ -40,21 +39,21 @@ export class AppComponent {
 		this.total = this.calcTotal()
 	}
 
-  updateQTY(action: 'add' | 'remove', id: number) {
-    const product = this.products.find((p) => p.id === id)
-    if(!product) return
-    switch(action) {
-      case 'add':
-        product.qty++
-        break
-      case 'remove':
-        if(product.qty > 0) product.qty--
-        break
-    }
-    this.total = this.calcTotal()
-  }
-
 	calcTotal() {
 		return this.products.reduce((acc, p) => acc + p.price * p.qty, 0)
+	}
+
+	updateQTY(action: 'add' | 'remove', id: number) {
+		const p = this.products.find(i => i.id === id)
+		if(!p) return
+		switch(action) {
+			case 'add':
+				p.qty++
+				break
+			case 'remove':
+				if(p.qty > 0) p.qty--
+				break
+		}
+		this.total = this.calcTotal()
 	}
 }
