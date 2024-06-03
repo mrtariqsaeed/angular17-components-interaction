@@ -1,45 +1,38 @@
-import { Component, signal } from '@angular/core'
+import { Component } from '@angular/core'
+import { Product } from './models'
+import { CartItemComponent } from './cart-item.component'
 
 @Component({
 	selector: 'app-root',
 	standalone: true,
+	imports: [CartItemComponent],
 	template: `
 		<h1>Shopping Cart</h1>
 
 		@for (product of products; track product.id) {
-      <li>
-        {{ product.name }} | {{ '$' + product.price }} |
-        <button (click)="reduceItem(product.id)">-</button>
-        {{ product.quantity }}
-        <button (click)="addItem(product.id)">+</button>
-      </li>
+      <cart-item
+        [product]="product"
+        (remove)="updateQTY('remove', product.id)"
+        (add)="updateQTY('add', product.id)"
+      />
 		}
-
-		<b>Total: {{ total }}</b>
-	`,
-	styles: `
-    li {
-      list-style: none;
-      margin: 10px 0;
-      padding: 10px;
-      background: #ddd;
-    }
-  `
+		<b>Total: {{ '$' + total }}</b>
+	`
 })
 export class AppComponent {
 	total = 0
-	products = [
+	products: Product[] = [
 		{
 			id: 1,
 			name: 'sugar',
 			price: 5,
-			quantity: 2
+			qty: 2
 		},
 		{
 			id: 2,
 			name: 'rice',
 			price: 8,
-			quantity: 1
+			qty: 1
 		}
 	]
 
@@ -47,19 +40,21 @@ export class AppComponent {
 		this.total = this.calcTotal()
 	}
 
-	addItem(id: number) {
-		const product = this.products.find((p) => p.id === id)
-		if (product) product.quantity++
-		this.total = this.calcTotal()
-	}
-
-	reduceItem(id: number) {
-		const product = this.products.find((p) => p.id === id)
-		if (product && product.quantity > 0) product.quantity--
-		this.total = this.calcTotal()
-	}
+  updateQTY(action: 'add' | 'remove', id: number) {
+    const product = this.products.find((p) => p.id === id)
+    if(!product) return
+    switch(action) {
+      case 'add':
+        product.qty++
+        break
+      case 'remove':
+        if(product.qty > 0) product.qty--
+        break
+    }
+    this.total = this.calcTotal()
+  }
 
 	calcTotal() {
-		return this.products.reduce((acc, p) => acc + p.price * p.quantity, 0)
+		return this.products.reduce((acc, p) => acc + p.price * p.qty, 0)
 	}
 }
